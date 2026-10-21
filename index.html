@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaproszenie na Pierwszą Randkę dla Malwiny ✨</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Inter & Dancing Script -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #831843 0%, #db2777 50%, #f472b6 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .romantic-font {
+            font-family: 'Dancing Script', cursive;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+        /* Floating background elements */
+        @keyframes float {
+            0% { transform: translateY(0vh) rotate(0deg); opacity: 0.8; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        .floating-heart {
+            position: fixed;
+            bottom: -10vh;
+            color: rgba(255, 255, 255, 0.6);
+            animation: float 8s infinite linear;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+        }
+        .glow-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-btn:hover {
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.8);
+            transform: translateY(-2px);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #db2777;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-6 relative min-h-screen">
+
+    <!-- Floating Background Elements -->
+    <div id="hearts-container"></div>
+
+    <!-- Main Card Container -->
+    <div class="glass-card w-full max-w-2xl rounded-3xl p-5 sm:p-10 relative z-10 transition-all duration-500 my-4">
+        
+        <!-- Header Branding -->
+        <div class="text-center mb-6">
+            <span class="inline-block bg-pink-100 text-pink-700 text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full uppercase tracking-wider mb-2 shadow-sm">
+                Oficjalne Zaproszenie od Szymona ✨
+            </span>
+            <h1 class="romantic-font text-4xl sm:text-6xl text-pink-900 font-bold tracking-wide">
+                Dla Uroczej Malwiny 🌟
+            </h1>
+        </div>
+
+        <!-- STEP 1: THE DATE QUESTION -->
+        <div id="step-1" class="step-content space-y-6 text-center">
+            <div class="bg-pink-50/80 p-6 rounded-2xl border border-pink-200">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                    Pójdziesz ze mną na naszą pierwszą randkę? 😉
+                </h2>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    Obiecuję super atmosferę, dobre jedzenie i zero nudy!
+                </p>
+            </div>
+
+            <div id="buttons-container" class="flex flex-col sm:flex-row items-center justify-center gap-4 relative min-h-[120px] pt-4">
+                <button onclick="nextStep(2)" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold px-8 py-4 rounded-2xl text-lg shadow-lg w-full sm:w-auto hover:scale-105 active:scale-95">
+                    TAK! Jasne, że tak! 🎉
+                </button>
+                
+                <button id="btn-no" onclick="handleNoClick()" onmouseover="moveNoButton()" class="bg-gray-200 text-gray-700 font-semibold px-8 py-4 rounded-2xl text-lg shadow-md transition-all duration-150 absolute sm:static">
+                    Nie 😜
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: DATE PICKER (OCTOBER) -->
+        <div id="step-2" class="step-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    Kiedy masz wolny czas? 📅
+                </h2>
+                <p class="text-gray-600 text-sm">
+                    Wybierz październikową datę (możesz zaznaczyć kilka opcji!):
+                </p>
+            </div>
+
+            <div class="bg-white/80 p-5 rounded-2xl border border-pink-200 shadow-inner">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold text-pink-900 text-lg">Październik 🍁</span>
+                    <span class="text-xs text-pink-600 bg-pink-100 px-3 py-1 rounded-full font-medium">Zaznacz dni</span>
+                </div>
+                
+                <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-semibold text-pink-700 mb-2">
+                    <span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span>
+                </div>
+                
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2">
+                    <!-- Dynamic October Days Injected JS -->
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="prevStep(1)" class="px-6 py-3 rounded-xl border border-pink-300 text-pink-700 font-medium hover:bg-pink-50 transition-all">
+                    Wstecz
+                </button>
+                <button onclick="validateStep2()" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg">
+                    Dalej 👉
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: ACTIVITIES & FOOD -->
+        <div id="step-3" class="step-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    Na co masz ochotę? 🎡
+                </h2>
+                <p class="text-gray-600 text-sm">
+                    Zaznacz opcje, które Ci odpowiadają:
+                </p>
+            </div>
+
+            <div class="space-y-4 max-h-[360px] overflow-y-auto pr-1">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">
+                        Co robimy? (Atrakcje) 🎯
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="activities-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">
+                        Co jemy? (Pyszności wokół Tomaszowa) 🍕
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="food-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="prevStep(2)" class="px-6 py-3 rounded-xl border border-pink-300 text-pink-700 font-medium hover:bg-pink-50 transition-all">
+                    Wstecz
+                </button>
+                <button onclick="validateStep3()" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg">
+                    Dalej 👉
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: DESSERT & WELCOME GESTURE -->
+        <div id="step-4" class="step-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    Słodkości & Powitanie 🍨
+                </h2>
+                <p class="text-gray-600 text-sm">
+                    Dwa ważne pytania o osłodzenie dnia:
+                </p>
+            </div>
+
+            <div class="space-y-4 max-h-[360px] overflow-y-auto pr-1">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">Co na deser? 🍰</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="dessert-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">Czym Szymon ma Cię przywitać na start? 🎁</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="welcome-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="prevStep(3)" class="px-6 py-3 rounded-xl border border-pink-300 text-pink-700 font-medium hover:bg-pink-50 transition-all">
+                    Wstecz
+                </button>
+                <button onclick="validateStep4()" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg">
+                    Dalej 👉
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 5: DRESS CODE, DRIVER & PAYMENT -->
+        <div id="step-5" class="step-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    Stylówka, Transport & Rachunek 👗🚗💳
+                </h2>
+                <p class="text-gray-600 text-sm">Zasady i przygotowania do wyjścia:</p>
+            </div>
+
+            <div class="space-y-4 max-h-[360px] overflow-y-auto pr-1">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">W co się ubieramy? (Dress code) 👗</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="dresscode-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">Kto prowadzi auto / kieruje? 🚗</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="driver-options">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">Kto płaci za randkę? 💳</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="payment-options">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="prevStep(4)" class="px-6 py-3 rounded-xl border border-pink-300 text-pink-700 font-medium hover:bg-pink-50 transition-all">
+                    Wstecz
+                </button>
+                <button onclick="validateStep5()" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg">
+                    Dalej 👉
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 6: AFTER DATE PLAN -->
+        <div id="step-6" class="step-content hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    Finałowe Pytanie 🌌
+                </h2>
+                <p class="text-gray-600 text-sm">Jak zwieńczymy ten miły wieczór?</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-pink-700 mb-2">Co robimy po randce?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1" id="after-container">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="prevStep(5)" class="px-6 py-3 rounded-xl border border-pink-300 text-pink-700 font-medium hover:bg-pink-50 transition-all">
+                    Wstecz
+                </button>
+                <button onclick="submitAllData()" class="glow-btn bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg">
+                    Wyślij moje wybory na randkę! ✨
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 7: SUMMARY & CONFETTI -->
+        <div id="step-7" class="step-content hidden space-y-6 text-center">
+            <div class="bg-gradient-to-br from-pink-100 to-rose-100 p-6 sm:p-8 rounded-3xl border border-pink-300 shadow-inner">
+                <div class="text-5xl mb-3">🥂✨🎈</div>
+                <h2 class="romantic-font text-4xl text-pink-900 font-bold mb-2">
+                    Super! Plan Gotowy, Malwina!
+                </h2>
+                <p class="text-gray-700 text-sm mb-4">
+                    Twoje wybory zostały pomyślnie wysłane do Szymona! Oto podsumowanie:
+                </p>
+
+                <!-- Summary Box -->
+                <div class="bg-white/90 p-4 rounded-2xl text-left space-y-2 text-xs sm:text-sm text-gray-700 shadow-sm border border-pink-200">
+                    <div><strong>📅 Daty:</strong> <span id="sum-dates" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🎯 Atrakcje:</strong> <span id="sum-activities" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🍕 Jedzenie:</strong> <span id="sum-food" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🍨 Deser:</strong> <span id="sum-desserts" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🎁 Powitanie:</strong> <span id="sum-welcome" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>👗 Dress code:</strong> <span id="sum-dresscode" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🏎️ Kierowca:</strong> <span id="sum-driver" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>💳 Płatność:</strong> <span id="sum-payment" class="text-pink-700 font-medium">-</span></div>
+                    <div><strong>🌙 Po randce:</strong> <span id="sum-after" class="text-pink-700 font-medium">-</span></div>
+                </div>
+            </div>
+
+            <div class="text-xs text-white/90 pt-1 font-medium">
+                Stworzone specjalnie dla Malwiny przez Szymona 😊
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden Form integration container -->
+    <form id="hidden-form" action="https://formspree.io/f/xkjodvyn" method="POST" class="hidden">
+        <input type="hidden" name="malwina_dates" id="form-dates">
+        <input type="hidden" name="malwina_activities" id="form-activities">
+        <input type="hidden" name="malwina_food" id="form-food">
+        <input type="hidden" name="malwina_dessert" id="form-dessert">
+        <input type="hidden" name="malwina_welcome" id="form-welcome">
+        <input type="hidden" name="malwina_dresscode" id="form-dresscode">
+        <input type="hidden" name="malwina_driver" id="form-driver">
+        <input type="hidden" name="malwina_payment" id="form-payment">
+        <input type="hidden" name="malwina_after" id="form-after">
+    </form>
+
+    <script>
+        // Floating Background Particles
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            const items = ['✨', '🌸', '☕', '🍦', '🎈', '⭐'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'floating-heart';
+                el.innerHTML = items[Math.floor(Math.random() * items.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                el.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                container.appendChild(el);
+                setTimeout(() => el.remove(), 8000);
+            }, 700);
+        }
+        createFloatingHearts();
+
+        // Step Navigation Logic
+        let currentStep = 1;
+        function nextStep(step) {
+            document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            currentStep = step;
+            document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+        }
+        function prevStep(step) {
+            document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            currentStep = step;
+            document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+        }
+
+        // STEP 1: Escaping & Shrinking "NIE" Button
+        let noClickCount = 0;
+        let noScale = 1;
+
+        function moveNoButton() {
+            const btnNo = document.getElementById('btn-no');
+            const maxX = window.innerWidth - 120;
+            const maxY = window.innerHeight - 80;
+            const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+            
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        function handleNoClick() {
+            noClickCount++;
+            noScale = Math.max(0.1, 1 - (noClickCount * 0.1));
+            const btnNo = document.getElementById('btn-no');
+            btnNo.style.transform = `scale(${noScale})`;
+            
+            if (noClickCount >= 10) {
+                btnNo.style.display = 'none';
+            } else {
+                moveNoButton();
+            }
+        }
+
+        // STEP 2: October Calendar Generator
+        const selectedDates = new Set();
+        function buildCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            // Oct 2026 starts on Thursday (3 empty slots before)
+            const emptySlots = 3; 
+            for(let e=0; e < emptySlots; e++) {
+                const empty = document.createElement('div');
+                grid.appendChild(empty);
+            }
+
+            for (let day = 1; day <= 31; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'h-9 sm:h-11 flex items-center justify-center rounded-xl font-medium text-xs sm:text-sm cursor-pointer transition-all border border-pink-100 bg-white/60 hover:bg-pink-100 text-gray-700 select-none';
+                dayEl.innerText = day;
+                
+                const dateStr = `Październik ${day}`;
+                
+                dayEl.onclick = () => {
+                    if (selectedDates.has(dateStr)) {
+                        selectedDates.delete(dateStr);
+                        dayEl.classList.remove('bg-pink-600', 'text-white', 'border-pink-600', 'shadow-md');
+                        dayEl.classList.add('bg-white/60', 'text-gray-700');
+                    } else {
+                        selectedDates.add(dateStr);
+                        dayEl.classList.add('bg-pink-600', 'text-white', 'border-pink-600', 'shadow-md');
+                        dayEl.classList.remove('bg-white/60', 'text-gray-700');
+                    }
+                };
+                
+                grid.appendChild(dayEl);
+            }
+        }
+        buildCalendar();
+
+        function validateStep2() {
+            if (selectedDates.size === 0) {
+                showNotice("Zaznacz chociaż jeden dzień w październiku! 🍂");
+                return;
+            }
+            nextStep(3);
+        }
+
+        // STEP 3: Activities & Food Lists
+        const activitiesList = [
+            { name: 'Wycieczka rowerowa', emoji: '🚲' },
+            { name: 'Przejażdżka do innego miasta', emoji: '🚗' },
+            { name: 'Romantyczny spacer', emoji: '🌅' },
+            { name: 'Niespodzianka Szymona', emoji: '🎁' },
+            { name: 'Molo / Woda', emoji: '🌊' },
+            { name: 'Spacer w lesie / Parku', emoji: '🌲' },
+            { name: 'Zwiedzanie ciekawych miejsc', emoji: '🏰' }
+        ];
+
+        const foodList = [
+            { name: 'Pizza', emoji: '🍕' },
+            { name: 'Sushi', emoji: '🍣' },
+            { name: 'Burgery', emoji: '🍔' },
+            { name: 'KFC', emoji: '🍗' },
+            { name: "McDonald's", emoji: '🍟' },
+            { name: 'Włoska restauracja / Makaron', emoji: '🍝' },
+            { name: 'Kebab', emoji: '🥙' },
+            { name: 'Niespodzianka', emoji: '🎁' },
+            { name: 'Coś innego / Wyjazd gdzie indziej', emoji: '🗺️' }
+        ];
+
+        const selectedActivities = new Set();
+        const selectedFood = new Set();
+
+        function populateStep3() {
+            const actContainer = document.getElementById('activities-container');
+            activitiesList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flex items-center p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<span class="text-xl mr-2.5">${item.emoji}</span><span>${item.name}</span>`;
+                card.onclick = () => {
+                    if (selectedActivities.has(item.name)) {
+                        selectedActivities.delete(item.name);
+                        card.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    } else {
+                        selectedActivities.add(item.name);
+                        card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    }
+                };
+                actContainer.appendChild(card);
+            });
+
+            const foodContainer = document.getElementById('food-container');
+            foodList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flex items-center p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<span class="text-xl mr-2.5">${item.emoji}</span><span>${item.name}</span>`;
+                card.onclick = () => {
+                    if (selectedFood.has(item.name)) {
+                        selectedFood.delete(item.name);
+                        card.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    } else {
+                        selectedFood.add(item.name);
+                        card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    }
+                };
+                foodContainer.appendChild(card);
+            });
+        }
+        populateStep3();
+
+        function validateStep3() {
+            if (selectedActivities.size === 0 && selectedFood.size === 0) {
+                showNotice("Wybierz chociaż jedną aktywność lub jedzonko! 🍕");
+                return;
+            }
+            nextStep(4);
+        }
+
+        // STEP 4: Desserts & Welcome Gesture Options
+        const dessertList = [
+            { name: 'Naleśniki', emoji: '🥞' },
+            { name: 'Cukiernia Wenecja', emoji: '🍦' },
+            { name: 'Kawa i ciastko', emoji: '☕' },
+            { name: 'Deser w domu', emoji: '🍰' },
+            { name: 'Kawiarnia Alchemik', emoji: '🍹' },
+            { name: 'Panna Cotta', emoji: '🍮' },
+            { name: 'Gofry', emoji: '🧇' },
+            { name: 'Ice cream / Lody', emoji: '🍨' }
+        ];
+
+        const welcomeList = [
+            { name: 'Czekoladki / Słodycze', emoji: '🍫' },
+            { name: 'Ulubiona kawa na wynos', emoji: '☕' },
+            { name: 'Piękne kwiaty', emoji: '💐' },
+            { name: 'Mój czarujący uśmiech', emoji: '😁' },
+            { name: 'Coś pysznego do picia', emoji: '🧋' }
+        ];
+
+        const selectedDesserts = new Set();
+        let chosenWelcome = '';
+
+        function populateStep4() {
+            const desContainer = document.getElementById('dessert-container');
+            dessertList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flex items-center p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<span class="text-xl mr-2.5">${item.emoji}</span><span>${item.name}</span>`;
+                card.onclick = () => {
+                    if (selectedDesserts.has(item.name)) {
+                        selectedDesserts.delete(item.name);
+                        card.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    } else {
+                        selectedDesserts.add(item.name);
+                        card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                    }
+                };
+                desContainer.appendChild(card);
+            });
+
+            const welcomeContainer = document.getElementById('welcome-container');
+            welcomeList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'welcome-card flex items-center p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<span class="text-xl mr-2.5">${item.emoji}</span><span>${item.name}</span>`;
+                card.onclick = () => {
+                    chosenWelcome = item.name;
+                    document.querySelectorAll('.welcome-card').forEach(c => c.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400'));
+                    card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                };
+                welcomeContainer.appendChild(card);
+            });
+        }
+        populateStep4();
+
+        function validateStep4() {
+            if (selectedDesserts.size === 0 || !chosenWelcome) {
+                showNotice("Wybierz deser oraz powitanie od Szymona! 🍨🎁");
+                return;
+            }
+            nextStep(5);
+        }
+
+        // STEP 5: Dress code, Driver & Payment Options
+        const dressCodeList = [
+            { name: 'Elegancja', emoji: '👗', sub: 'Sukienka, garnitur i szyk' },
+            { name: 'Casual / wygodnie', emoji: '👟', sub: 'Luz, sneakersy i wygoda' },
+            { name: 'Secret Outfit', emoji: '🕵️‍♀️', sub: 'Niespodzianka!' },
+            { name: 'Cokolwiek byle ciepło', emoji: '🧦', sub: 'Wygoda i ciepło przede wszystkim' }
+        ];
+
+        const driverList = [
+            { name: 'Szymon', emoji: '🚗', sub: 'Profesjonalny szofer' },
+            { name: 'Malwina', emoji: '🏎️', sub: 'Zaufaj mi, umiem jeździć!' },
+            { name: 'Razem', emoji: '🔄', sub: 'Zmieniamy się na trasie' },
+            { name: 'Zaskocz mnie!', emoji: '🎲', sub: 'Okaże się na miejscu' }
+        ];
+
+        const paymentList = [
+            { name: 'Szymon płaci', emoji: '💳', sub: 'Klasyczny dżentelmen' },
+            { name: 'Malwina płaci', emoji: '💸', sub: 'Nie ma miękkiej gry!' },
+            { name: 'Dzielimy 50/50', emoji: '🤝', sub: 'Pół na pół, po partnersku' },
+            { name: 'Rzut monetą', emoji: '🪙', sub: 'Los zdecyduje przy rachunku' }
+        ];
+
+        let chosenDressCode = '';
+        let chosenDriver = '';
+        let chosenPayment = '';
+
+        function populateStep5() {
+            const dressContainer = document.getElementById('dresscode-container');
+            dressCodeList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'dress-card p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<div class="font-bold flex items-center"><span class="text-xl mr-2">${item.emoji}</span>${item.name}</div><div class="text-[11px] text-gray-500 mt-0.5">${item.sub}</div>`;
+                card.onclick = () => {
+                    chosenDressCode = item.name;
+                    document.querySelectorAll('.dress-card').forEach(c => c.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400'));
+                    card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                };
+                dressContainer.appendChild(card);
+            });
+
+            const driverContainer = document.getElementById('driver-options');
+            driverList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'driver-card p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<div class="font-bold flex items-center"><span class="text-xl mr-2">${item.emoji}</span>${item.name}</div><div class="text-[11px] text-gray-500 mt-0.5">${item.sub}</div>`;
+                card.onclick = () => {
+                    chosenDriver = item.name;
+                    document.querySelectorAll('.driver-card').forEach(c => c.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400'));
+                    card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                };
+                driverContainer.appendChild(card);
+            });
+
+            const paymentContainer = document.getElementById('payment-options');
+            paymentList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'payment-card p-2.5 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<div class="font-bold flex items-center"><span class="text-xl mr-2">${item.emoji}</span>${item.name}</div><div class="text-[11px] text-gray-500 mt-0.5">${item.sub}</div>`;
+                card.onclick = () => {
+                    chosenPayment = item.name;
+                    document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400'));
+                    card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                };
+                paymentContainer.appendChild(card);
+            });
+        }
+        populateStep5();
+
+        function validateStep5() {
+            if (!chosenDressCode || !chosenDriver || !chosenPayment) {
+                showNotice("Wybierz dress code, kierowcę oraz opcję płatności! 👗🚗💳");
+                return;
+            }
+            nextStep(6);
+        }
+
+        // STEP 6: After Date Options
+        const afterList = [
+            { name: 'Sleepover u Ciebie', emoji: '🌙' },
+            { name: 'Rozstajemy się grzecznie pod domem', emoji: '🚪' },
+            { name: 'Coś miłego ;)', emoji: '✨' },
+            { name: 'Oglądanie filmu', emoji: '🍿' },
+            { name: 'Spacer pod gwiazdami', emoji: '🌌' }
+        ];
+
+        let chosenAfter = '';
+
+        function populateStep6() {
+            const afterContainer = document.getElementById('after-container');
+            afterList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'after-card flex items-center p-3 rounded-xl border border-pink-200 bg-white/70 cursor-pointer transition-all hover:border-pink-500 text-xs sm:text-sm font-medium text-gray-800 select-none';
+                card.innerHTML = `<span class="text-xl mr-3">${item.emoji}</span><span>${item.name}</span>`;
+                card.onclick = () => {
+                    chosenAfter = item.name;
+                    document.querySelectorAll('.after-card').forEach(c => c.classList.remove('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400'));
+                    card.classList.add('border-pink-600', 'bg-pink-50', 'ring-2', 'ring-pink-400');
+                };
+                afterContainer.appendChild(card);
+            });
+        }
+        populateStep6();
+
+        // STEP 7: Submit Data & Final Screen
+        function submitAllData() {
+            if (!chosenAfter) {
+                showNotice("Wybierz co robimy po randce! 😊");
+                return;
+            }
+
+            const datesStr = Array.from(selectedDates).sort().join(', ');
+            const actStr = Array.from(selectedActivities).join(', ') || 'Brak';
+            const foodStr = Array.from(selectedFood).join(', ') || 'Brak';
+            const dessertStr = Array.from(selectedDesserts).join(', ') || 'Brak';
+
+            document.getElementById('sum-dates').innerText = datesStr;
+            document.getElementById('sum-activities').innerText = actStr;
+            document.getElementById('sum-food').innerText = foodStr;
+            document.getElementById('sum-desserts').innerText = dessertStr;
+            document.getElementById('sum-welcome').innerText = chosenWelcome;
+            document.getElementById('sum-dresscode').innerText = chosenDressCode;
+            document.getElementById('sum-driver').innerText = chosenDriver;
+            document.getElementById('sum-payment').innerText = chosenPayment;
+            document.getElementById('sum-after').innerText = chosenAfter;
+
+            // Fill hidden form fields
+            document.getElementById('form-dates').value = datesStr;
+            document.getElementById('form-activities').value = actStr;
+            document.getElementById('form-food').value = foodStr;
+            document.getElementById('form-dessert').value = dessertStr;
+            document.getElementById('form-welcome').value = chosenWelcome;
+            document.getElementById('form-dresscode').value = chosenDressCode;
+            document.getElementById('form-driver').value = chosenDriver;
+            document.getElementById('form-payment').value = chosenPayment;
+            document.getElementById('form-after').value = chosenAfter;
+
+            // Formspree Async Submit
+            const form = document.getElementById('hidden-form');
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+            }).catch(e => console.log(e));
+
+            nextStep(7);
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#db2777', '#f472b6', '#fb7185', '#ffffff']
+            });
+        }
+
+        function showNotice(msg) {
+            const existing = document.getElementById('custom-notice');
+            if (existing) existing.remove();
+
+            const notice = document.createElement('div');
+            notice.id = 'custom-notice';
+            notice.className = 'fixed top-6 left-1/2 transform -translate-x-1/2 bg-rose-900 text-white px-6 py-3 rounded-2xl shadow-xl z-50 text-xs sm:text-sm font-medium animate-bounce border border-rose-400 text-center max-w-xs sm:max-w-md';
+            notice.innerText = msg;
+            document.body.appendChild(notice);
+
+            setTimeout(() => { notice.remove(); }, 3500);
+        }
+    </script>
+</body>
+</html>
